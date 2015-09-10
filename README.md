@@ -5,6 +5,6 @@ Raspi energy consumption meter
 2. edit /boot/cmdline.txt and remove all references to ttyAMA0
 3. do an apt-get update
 4. install python-serial, mysql-server, python-mysqldb, apache2, php5, php5-mysql, php5-gd
-5. put the index.php and *.py in /var/www
-6. start *.py with python and wait a bit
+5. put the index.php and energy.py in /var/www
+6. start energy.py with python and wait a bit
 7. go the ip address of your pi in a browser
