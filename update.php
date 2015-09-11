@@ -13,7 +13,7 @@ if (!$link) {
 
 mysql_select_db($dbase, $link) or die('Could not select database.');
 
-$query1 = 'SELECT tijd, vermogen FROM meting ORDER BY tijd DESC LIMIT 50';                                 // last houres, elke 10 seconde!
+$query1 = 'SELECT tijd, dag, nacht FROM meting ORDER BY tijd DESC LIMIT 50';                                 // last houres, elke 10 seconde!
 
 //uitvoere0
 $result1 = mysql_query($query1) or die(mysql_error()); 
@@ -35,7 +35,9 @@ for ($data1 = array ();
     $data1[] = $row) {
 }
 
-echo ($data1[0][1] . "Watt");
+echo ("<h1>" . $data1[0][2] . "</h1>");
+echo ("<h2> WATT </h2>");
+echo ("<h4>" . $data1[0][0] . "</h4>");
 
 //testing:
 
