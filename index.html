@@ -1,0 +1,23 @@
+<html>
+<style type ="text/css">
+body { color: #C8FA32; background-color: #003300; }
+body { font-size: 14px;  font-family: Verdana; }
+</style>
+<body>
+<h1>Electricity consumption / production</h1>
+<content>
+<content>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		setInterval(update, 10000);
+		update;
+	});
+	
+	function update() {
+		$(".content").load('update.php');
+	}
+</script>
+
+</body>
+</html>
