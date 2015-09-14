@@ -21,8 +21,8 @@ db = "true"
 go = "false"
 
 #variables used:
-power= str(6) #Production in W
-
+dag = str(6) #Production in W
+nacht = str(6)
 #Set COM port config
 ser = serial.Serial()
 ser.baudrate = 9600
@@ -61,7 +61,7 @@ def writeToMeting():
        with con:
                     cur = con.cursor()
                     cur.execute("DELETE from meting order by tijd ASC LIMIT 1")
-                    cur.execute("INSERT INTO meting(tijd,vermogen) VALUES (%s,%s)" ,( now, power))
+                    cur.execute("INSERT INTO meting(tijd,dag,nacht) VALUES (%s,%s,%s)" ,( now, dag, nacht))
                     print now, "Data written in database "
                     cur.close()
     except ValueError:
@@ -85,8 +85,10 @@ while go == "true":
         regel=str(regel)
         regel=regel.strip()
         if regel[0:9] == "1-0:2.7.0":
-             power = str(int(float(regel[10:17])*1000))
-             writeToMeting()
+             dag = str(int(float(regel[10:17])*1000))
+        elif regel[0:9] == "1-0:1.7.0":
+             nacht = str(int(float(regel[10:17])*1000))
+     writeToMeting()
 
 #end while go
 #Close port and show status
