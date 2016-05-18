@@ -40,7 +40,7 @@ try:
         cur.execute("CREATE TABLE IF NOT EXISTS meting (time datetime, consumption int(3), production int(3))")
         cur.execute("CREATE TABLE IF NOT EXISTS meting24 (time datetime, consumption int(3), production int(3))")
 except ValueError:
-
+    print("Something went wrong connecting to database")
 #Set COM port config
 ser = serial.Serial()
 ser.baudrate = 9600
