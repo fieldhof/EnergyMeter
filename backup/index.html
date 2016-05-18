@@ -11,8 +11,7 @@ h1 {	font-size: 100px;
 <body>
 <content>
 </content>
-<div id="chart_div_hour" style="width: 900px; height: 500px;"></div>
-<div id="chart_div_day" style="width: 900px; height: 500px;"></div>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
@@ -21,12 +20,8 @@ h1 {	font-size: 100px;
 <script type="text/javascript">
 
 	google.setOnLoadCallback(function() {
-		updateChart("php/gethour.php","chart_div_hour");
-		updateChart("php/getday.php","chart_div_day");
-		setInterval(function() {
-			updateChart("php/gethour.php","chart_div_hour");
-			updateChart("php/getday.php","chart_div_day");		
-		}, 10000);
+		getArray();
+		setInterval(getArray, 10000);
 	});
 	google.load("visualization", "1", {packages:["corechart"]});
 
@@ -43,11 +38,11 @@ h1 {	font-size: 100px;
 		return new Date(split2[0], split2[1], split2[2], split3[0], split3[1], split3[2]);
 	}
 	
-	function updateChart(url, elementID) {
+	function getArray() {
 		console.log("Load callback");
 		var arr = [['Time', 'Consumption', 'Production']];
 		$.ajax({
-			url: url,
+			url:'php/getresult.php',
 			success: function(output) {
 				var tempArr = JSON.parse(output);
 				$.each(tempArr, function(index, value) {
@@ -60,23 +55,11 @@ h1 {	font-size: 100px;
         			var data = google.visualization.arrayToDataTable(arr);
 				var options = {
 					title: 'Energiemeter',
-					hAxis: {
-						title: 'Uur'
-					},
-					series: [{targetAxisIndex: 1},{targetAxisIndex: 1}],					
-					vAxes: [
-						{},
-						{
-							title: 'Watt', 
-							minValue: 10, 
-							gridlines: {
-								count: 8
-							}
-						}
-					],
+					hAxis: {title: 'Uur'},
+					vAxis: {title: 'Watt', minValue: 0},
 					colors:['red', 'green']
 				}
-        			var chart = new google.visualization.AreaChart(document.getElementById(elementID));
+        			var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
         			chart.draw(data, options);
 			}
 		});

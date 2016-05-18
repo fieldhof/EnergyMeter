@@ -13,7 +13,7 @@ if (!$link) {
 
 mysql_select_db($dbase, $link) or die('Could not select database.');
 
-$query1 = 'SELECT tijd, dag, nacht FROM meting ORDER BY tijd DESC LIMIT 50';                                 // last houres, elke 10 seconde!
+$query1 = 'SELECT * FROM meting ORDER BY time DESC LIMIT 1';                                 // last houres, elke 10 seconde!
 
 //uitvoere0
 $result1 = mysql_query($query1) or die(mysql_error()); 
@@ -30,14 +30,11 @@ if (mysql_num_rows($result1) == 0) {
 
 
 //convert results to two dimensional array:
-for ($data1 = array ();
-    $row = mysql_fetch_array($result1);
-    $data1[] = $row) {
-}
 
-echo ("<h1>" . $data1[0][2] . "</h1>");
-echo ("<h2> WATT </h2>");
-echo ("<h4>" . $data1[0][0] . "</h4>");
+$data1 = mysql_fetch_array($result1);
+
+echo ("<h1><font color='red'>" . $data1[1] . "</font> -- <font color='green'>" . $data1[2] . "</font></h1>");
+echo ("<h4>" . $data1[0] . "</h4>");
 
 //testing:
 

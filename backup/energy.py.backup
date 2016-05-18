@@ -1,0 +1,123 @@
+# this program listens to the serial port of a P1 electricity Smart meter,
+# receives the collected data en puts them into a mysql database
+# juni 2015
+
+import MySQLdb as mdb
+import sys
+import os
+import time
+import serial
+import socket
+from oled.device import ssd1306
+from oled.render import canvas
+from PIL import ImageFont
+import commands
+
+device = ssd1306(port=1, address=0x3C)
+
+#Fonts
+font1 = ImageFont.truetype("/var/www/ccra.ttf", 25)
+font2 = ImageFont.truetype("/var/www/ccra.ttf", 31)
+
+
+#===========================================
+#========== init values/parameters ====
+#===========================================
+version="energy.py"
+os.environ['TZ'] = 'Europe/Amsterdam'
+now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+db = "true" 
+go = "false"
+
+#variables used:
+production = 0 	#Production in W
+consumption = 0	#Consumption in W
+
+host = 'localhost'
+user = 'eneco'
+password = 'hallo'
+database = 'energiedb'
+
+#Set COM port config
+ser = serial.Serial()
+ser.baudrate = 9600
+ser.bytesize=serial.SEVENBITS
+ser.parity=serial.PARITY_EVEN
+ser.stopbits=serial.STOPBITS_ONE
+ser.xonxoff=0
+ser.rtscts=0
+ser.timeout=20
+ser.port="/dev/ttyAMA0"
+
+#===========================================
+#============== connect to serial port =====
+#===========================================
+#Open COM port
+try:
+    ser.open()
+    go = 1
+except:
+    sys.exit ("Error opening the serial port")
+    go = 0
+
+#================================================================
+#=========== connect to mysql database1 =========================
+#================================================================
+# table name: meting
+#================================================================
+def writeToMeting():
+	now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+	try:
+		con = mdb.connect('localhost', 'eneco', 'hallo', 'energiedb')
+		db= 1
+       		with con:
+			
+       			cur = con.cursor()
+			cur.execute("SELECT COUNT(*) FROM meting")
+			size = cur.fetchone()[0]
+			if size >= 360 :
+				rest = size - 359
+				cur.execute("DELETE from meting WHERE time IS NOT NULL order by time asc LIMIT %s", rest)
+                    	cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,( now, consumption, production))
+                    	print now, "Data written in database "
+                    	cur.close()
+    	except ValueError:
+     		print 'There is no connection with the database. Error ..'
+     		db= 0
+	showMeting()
+
+def showMeting():
+	ip = commands.getoutput('ip address show dev eth0').split()
+	ip = ip[ip.index('inet') + 1].split('/')[0]
+	
+	with canvas(device) as draw:
+		padding = 2
+		top = padding
+		bottom = device.height - padding - 1
+		draw.text((padding, top), ip, font=font1, fill=255)
+		draw.text((padding, top+25), str(consumption) + ':' + str(production), font=font2, fill=255)
+     
+#===========================================
+#==============    Main loop           =====
+#===========================================
+old1 = 0; dW = 0; W = 0; count = 0;
+consRead = False
+while True: 
+       	#Read 1 line from serial port and analyse
+       	regel = str(ser.readline()).strip()
+       	if regel[0:9] == "1-0:1.7.0":
+		consRead = True
+		consumption = int(float(regel[10:17])*1000)
+        elif regel[0:9] == "1-0:2.7.0":
+          	production = int(float(regel[10:17])*1000)
+		if consRead:
+			conRead = False
+     			writeToMeting()
+
+
+#end while go
+#Close port and show status
+try:
+    ser.close()
+except:
+    sys.exit ("Program aborted. Serial port not closed.")
