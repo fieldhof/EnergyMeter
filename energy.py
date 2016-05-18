@@ -28,9 +28,18 @@ tablesize = 360
 dayprecision = 12
 
 host = 'localhost'
-user = 'eneco'
+user = 'root'
 password = 'hallo'
 database = 'energiedb'
+
+try:
+    db = mdb.connect(host, user, password)
+    with con:
+        cur = db.cursor()
+        cur.execute("CREATE DATABASE IF NOT EXISTS %s", database)
+        cur.execute("CREATE TABLE IF NOT EXISTS meting (time datetime, consumption int(3), production int(3))")
+        cur.execute("CREATE TABLE IF NOT EXISTS meting24 (time datetime, consumption int(3), production int(3))")
+except ValueError:
 
 #Set COM port config
 ser = serial.Serial()
@@ -62,7 +71,7 @@ except:
 def writeToMeting():
 	now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 	try:
-		con = mdb.connect('localhost', 'eneco', 'hallo', 'energiedb')
+		con = mdb.connect(host, user, password, database)
        	with con:
 			cur = con.cursor()
 			cur.execute("SELECT COUNT(*) FROM meting")
@@ -81,7 +90,7 @@ def writeToMeting24():
     print "Writing to 24 hour table"
     now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     try:
-        con = mdb.connect('localhost', 'eneco', 'hallo', 'energiedb')
+        con = mdb.connect(host, user, password, database)
         with con:
             cur = con.cursor()
             cur.execute("SELECT COUNT(*) FROM meting24")
