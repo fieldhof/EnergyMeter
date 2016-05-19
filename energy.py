@@ -83,7 +83,7 @@ def writeToMeting():
 	    cur.execute("DELETE from meting WHERE time IS NOT NULL order by time asc LIMIT %s" , rest)
 	    cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,(now, consumption, production))
             con.commit()
-	    print now, "Data written in database "
+#	    print now, "Data written in database "
             cur.close()
     except ValueError:
      	print 'There is no connection with the database. Error ..'
@@ -147,7 +147,7 @@ while True:
             prodcount = 0
         writeToMeting()
 #        print "\n"
-    else:
+#    else:
 #        print regel
 
 
