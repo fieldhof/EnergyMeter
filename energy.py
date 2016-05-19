@@ -9,6 +9,8 @@ import time
 import serial
 import socket
 import commands
+from warnings import filterwarnings
+filterwarnings('ignore', category = mdb.Warning)
 
 #===========================================
 #========== init values/parameters ====
@@ -30,15 +32,15 @@ dayprecision = 12
 host = 'localhost'
 user = 'root'
 password = 'hallo'
-database = 'energiedb'
+database = "energiedb"
 
 try:
     db = mdb.connect(host, user, password)
-    with db:
-        cur = db.cursor()
-        cur.execute("CREATE DATABASE IF NOT EXISTS %s", database)
-        cur.execute("CREATE TABLE IF NOT EXISTS meting (time datetime, consumption int(3), production int(3))")
-        cur.execute("CREATE TABLE IF NOT EXISTS meting24 (time datetime, consumption int(3), production int(3))")
+    cur = db.cursor()
+    cur.execute("CREATE DATABASE IF NOT EXISTS %s" % database)
+    cur.execute("use %s" % database)
+    cur.execute("CREATE TABLE IF NOT EXISTS meting (time datetime, consumption int(3), production int(3))")
+    cur.execute("CREATE TABLE IF NOT EXISTS meting24 (time datetime, consumption int(3), production int(3))")
 except ValueError:
     print "Something went wrong connecting to database"
 #Set COM port config
@@ -69,19 +71,20 @@ except:
 # table name: meting
 #================================================================
 def writeToMeting():
-	now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-	try:
-		con = mdb.connect(host, user, password, database)
-       	with con:
-			cur = con.cursor()
-			cur.execute("SELECT COUNT(*) FROM meting")
-			size = cur.fetchone()[0]
-			if size >= tablesize :
-				rest = size - 359
-				cur.execute("DELETE from meting WHERE time IS NOT NULL order by time asc LIMIT %s", rest)
-                cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,( now, consumption, production))
-                print now, "Data written in database "
-                cur.close()
+    print "Writing to database"
+    now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    try:
+        con = mdb.connect(host, user, password, database)
+ 	cur = con.cursor()
+	cur.execute("SELECT COUNT(*) FROM meting")
+	size = cur.fetchone()[0]
+	if size >= tablesize :
+	    rest = size - 359
+	    cur.execute("DELETE from meting WHERE time IS NOT NULL order by time asc LIMIT %s" , rest)
+	    cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,(now, consumption, production))
+            con.commit()
+	    print now, "Data written in database "
+            cur.close()
     except ValueError:
      	print 'There is no connection with the database. Error ..'
 
@@ -91,15 +94,15 @@ def writeToMeting24():
     now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     try:
         con = mdb.connect(host, user, password, database)
-        with con:
-            cur = con.cursor()
-            cur.execute("SELECT COUNT(*) FROM meting24")
-            size = cur.fetchone()[0]
-            if size >= ((6*60*24)/dayprecision) :
-                rest = size - (tablesize - 1)
-                cur.execute("DELETE from meting24 WHERE time IS NOT NULL order by time asc LIMIT %s", rest)
-                cur.execute("INSERT INTO meting24(time,consumption,production) VALUES (%s,%s,%s)" ,( now, (conscount/dayprecision), (prodcount/dayprecision)))
-                cur.close()
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM meting24")
+        size = cur.fetchone()[0]
+        if size >= ((6*60*24)/dayprecision) :
+            rest = size - (tablesize - 1)
+            cur.execute("DELETE from meting24 WHERE time IS NOT NULL order by time asc LIMIT %s" , rest)
+            cur.execute("INSERT INTO meting24(time,consumption,production) VALUES (%s,%s,%s)" , ( now, (conscount/dayprecision), (prodcount/dayprecision)))
+            con.commit()
+            cur.close()
     except ValueError:
         print 'There is no connection with the database. Error ..'
 
@@ -142,8 +145,8 @@ while True:
             writeToMeting24()
             conscount = 0
             prodcount = 0
-            writeToMeting()
-            print "\n"
+        writeToMeting()
+        print "\n"
     else:
         print regel
 
