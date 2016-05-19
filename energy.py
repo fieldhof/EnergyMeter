@@ -71,7 +71,7 @@ except:
 # table name: meting
 #================================================================
 def writeToMeting():
-    print "Writing to database"
+#    print "Writing to database"
     now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     try:
         con = mdb.connect(host, user, password, database)
@@ -90,7 +90,7 @@ def writeToMeting():
 
 
 def writeToMeting24():
-    print "Writing to 24 hour table"
+#    print "Writing to 24 hour table"
     now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     try:
         con = mdb.connect(host, user, password, database)
@@ -116,28 +116,28 @@ while True:
     regel = str(ser.readline()).strip()
     if regel[0:9] == "1-0:1.8.1":
         totConsLow = float(regel[10:19])
-        print "Totale verbruik (L) = ", totConsLow, " kW/h"
+#        print "Totale verbruik (L) = ", totConsLow, " kW/h"
     elif regel[0:9] == "1-0:1.8.2":
         totConsHigh = float(regel[10:19])
-        print "Totale verbruik (H) = ", totConsHigh, " kW/h"
+#        print "Totale verbruik (H) = ", totConsHigh, " kW/h"
     elif regel[0:9] == "1-0:2.8.1":
         totProdLow = int(float(regel[10:18])*1000)
-        print "Totale productie (L) = ", totProdLow, " W/h"
+#        print "Totale productie (L) = ", totProdLow, " W/h"
     elif regel[0:9] == "1-0:2.8.2":
         totProdHigh = int(float(regel[10:18])*1000)
-        print "Totale productie (H) = ", totProdHigh, " W/h"
+#        print "Totale productie (H) = ", totProdHigh, " W/h"
     elif regel[0:9] == "1-0:1.7.0":
         consumption = int(float(regel[10:17])*1000)
         conscount += consumption
-        print "Momentaan verbruik = ", consumption, " W/h"
+#        print "Momentaan verbruik = ", consumption, " W/h"
     elif regel[0:9] == "1-0:2.7.0":
         production = int(float(regel[10:17])*1000)
         prodcount += production
-        print "Momentaan production = ", production, " W/h"
+#        print "Momentaan production = ", production, " W/h"
     elif regel[0:10] == "0-1:24.3.0":
         newRegel = str(ser.readline()).strip()
         consGas = float(newRegel[1:10])
-        print "Verbruik gas? = ", consGas, " m3"
+#        print "Verbruik gas? = ", consGas, " m3"
     elif regel[0:1] == "!":
         count += 1
         count = count % dayprecision
@@ -146,9 +146,9 @@ while True:
             conscount = 0
             prodcount = 0
         writeToMeting()
-        print "\n"
+#        print "\n"
     else:
-        print regel
+#        print regel
 
 
 #end while go
