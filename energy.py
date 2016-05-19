@@ -13,36 +13,6 @@ from warnings import filterwarnings
 filterwarnings('ignore', category = mdb.Warning)
 
 #===========================================
-#========== OLED specific ====
-#===========================================
-from oled.device import ssd1306
-from oled.render import canvas
-from PIL import ImageFont
-device = ssd1306(port=1, address=0x3C)
-
-#Fonts
-font1 = ImageFont.truetype("/var/www/ccra.ttf", 25)
-font2 = ImageFont.truetype("/var/www/ccra.ttf", 35)
-
-with canvas(device) as draw:
-    draw.text((2,2), 'Starting', font=font1, fill=255)
-
-def showMeting():
-	ip = commands.getoutput('ip address show dev eth0').split()
-	ip = ip[ip.index('inet') + 1].split('/')[0]
-	with canvas(device) as draw:
-		padding = 2
-		top = padding
-		bottom = device.height - padding - 1
-		draw.text((padding, top), ip, font=font1, fill=255)
-		if consumption > 0 :
-			draw.polygon([(8,26),(22,26),(22,40),(29,40),(15,59),(1,40),(8,40)], outline = 255,  fill=0)
-			draw.text((padding+40, top+25), str(consumption), font=font2, fill=255)
-		else :
-			draw.polygon([(8,59),(22,59),(22,45),(29,45),(15,26),(1,45),(8,45)], outline = 255,  fill=0)
-			draw.text((padding, top+25), str(production), font=font2, fill=255)
-
-#===========================================
 #========== init values/parameters ====
 #===========================================
 version="energy.py"
@@ -92,8 +62,6 @@ try:
     ser.open()
     go = 1
 except:
-    with canvas(device) as draw:
-        draw.text((2,2), 'Serial failed', font=font1, fill=255)
     sys.exit ("Error opening the serial port")
     go = 0
 
@@ -119,7 +87,7 @@ def writeToMeting():
             cur.close()
     except ValueError:
      	print 'There is no connection with the database. Error ..'
-    showMeting()
+
 
 def writeToMeting24():
 #    print "Writing to 24 hour table"
