@@ -11,4 +11,4 @@ Raspi energy consumption meter
 8. go the ip address of your pi in a browser
 
 ##Optional
-9. To start the energymonitor at reboot `crontab -e` and add the line `@reboot python /var/www/energy.py` 
+9. To start the energymonitor at reboot `crontab -e` and add the line `@reboot sh /var/www/launcher.sh >/var/www/logs/cronlog 2>&1` 
