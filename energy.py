@@ -113,10 +113,10 @@ def writeToMeting():
 	if size >= tablesize :
 	    rest = size - 359
 	    cur.execute("DELETE from meting WHERE time IS NOT NULL order by time asc LIMIT %s" , rest)
-	    cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,(now, consumption, production))
-            con.commit()
+	cur.execute("INSERT INTO meting(time,consumption,production) VALUES (%s,%s,%s)" ,(now, consumption, production))
+        con.commit()
 #	    print now, "Data written in database "
-            cur.close()
+        cur.close()
     except ValueError:
      	print 'There is no connection with the database. Error ..'
     showMeting()
@@ -132,9 +132,9 @@ def writeToMeting24():
         if size >= ((6*60*24)/dayprecision) :
             rest = size - (tablesize - 1)
             cur.execute("DELETE from meting24 WHERE time IS NOT NULL order by time asc LIMIT %s" , rest)
-            cur.execute("INSERT INTO meting24(time,consumption,production) VALUES (%s,%s,%s)" , ( now, (conscount/dayprecision), (prodcount/dayprecision)))
-            con.commit()
-            cur.close()
+        cur.execute("INSERT INTO meting24(time,consumption,production) VALUES (%s,%s,%s)" , ( now, (conscount/dayprecision), (prodcount/dayprecision)))
+        con.commit()
+        cur.close()
     except ValueError:
         print 'There is no connection with the database. Error ..'
 
