@@ -1,4 +1,5 @@
 cd /
-cd /var/www
-python energy.py
+cd /var/www/python
+python energiemeter.py
+#python inverter.py
 cd /

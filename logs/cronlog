@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "energy.py", line 38, in <module>
+  File "energiemeter.py", line 68, in <module>
     db = mdb.connect(host, user, password)
   File "/usr/lib/python2.7/dist-packages/MySQLdb/__init__.py", line 81, in Connect
     return Connection(*args, **kwargs)

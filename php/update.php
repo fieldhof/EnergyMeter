@@ -32,9 +32,13 @@ if (mysql_num_rows($result1) == 0) {
 //convert results to two dimensional array:
 
 $data1 = mysql_fetch_array($result1);
-
-echo ("<h1><font color='red'>" . $data1[1] . "</font> -- <font color='green'>" . $data1[2] . "</font></h1>");
-echo ("<h4>" . $data1[0] . "</h4>");
+echo ("<div class='page-header'>");
+if(($data1[1]+$data1[2]) < 0) {
+    echo ("<h2><font color='red'>" . ($data1[1]+$data1[2]) . "</font>");
+} else {
+    echo ("<h2><font color='green'>" . ($data1[1]+$data1[2]) . "</font>");
+}
+echo ("<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $data1[0] . "</small></h2></div>");
 
 //testing:
 
